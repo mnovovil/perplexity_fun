@@ -1,6 +1,6 @@
 # Perplexity API Query System
 
-This project provides a Docker-based setup to interact with the Perplexity API for running AI-powered queries.
+This project provides a set up to interact with Perplexity from a local terminal, no need to go into web.
 
 ## Setup
 
@@ -39,33 +39,68 @@ This project provides a Docker-based setup to interact with the Perplexity API f
    python src/query.py
    ```
 
-### 4. Running with Docker (terminal-only)
+### 4. Local terminal deployment (no browser)
 
-This repository is configured to be used entirely from the terminal using Docker. The image includes a small CLI wrapper so you can pass a prompt as an argument or pipe text into the container.
+You can build and run the Perplexity client entirely from the terminal — no browser required. The repo includes two helper scripts in `scripts/` to simplify this on Windows.
+
+Quick Setup (one command)
+
+Run this single command to create a Desktop shortcut that builds the image and lets you enter queries interactively:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\miguel\perplexity\scripts\create_shortcut.ps1" -AttemptPinToTaskbar
+```
+
+How to use the shortcut
+
+- Double-click the `Build Perplexity` shortcut on your Desktop.
+- The shortcut builds the Docker image, then prompts: `Enter prompt to send to Perplexity (leave empty to finish)`.
+- Type your query (for example: `Tell me about Salinas, Asturias`) and press Enter; the response prints to the window.
+- Press Enter on an empty line to finish and close the window.
+
+- `scripts/build_perplexity.ps1` — builds the Docker image and then prompts you for queries; each query is sent to the container and the response printed.
+- `scripts/create_shortcut.ps1` — creates a Desktop shortcut that runs the build script (optional).
+
+Quick manual commands
 
 1. Build the Docker image:
-   ```bash
+   ```powershell
    docker build -t perplexity-api .
    ```
 
-2. Run the container with a prompt as an argument:
-   ```bash
+2a. Run a single prompt (pass prompt as an argument):
+   ```powershell
    docker run --rm --env-file .env perplexity-api "Tell me about Salinas, Asturias"
    ```
 
-3. Or pipe a prompt into the container (recommended for multi-line prompts):
-   ```bash
-   echo "Tell me about Salinas, Asturias" | docker run --rm --env-file .env -i perplexity-api
+2b. Or run by invoking the Python inside the image (more reliable if you hit TTY/stdin issues):
+   ```powershell
+   docker run --rm --env-file .env --entrypoint /opt/conda/envs/appenv/bin/python perplexity-api /app/src/query.py "Tell me about Salinas, Asturias"
    ```
 
-4. To specify a different preset, set `PERPLEXITY_PRESET` in your `.env` or pass it as an env var:
-   ```bash
-   docker run --rm --env-file .env -e PERPLEXITY_PRESET=pro perplexity-api "Your question here"
+2c. Pipe a prompt into the container (good for multi-line input):
+   ```powershell
+   echo "Tell me about Salinas, Asturias" | docker run --rm -i --env-file .env --entrypoint /opt/conda/envs/appenv/bin/python perplexity-api /app/src/query.py
    ```
 
-Notes:
-- Always keep your API key in `.env` and pass it with `--env-file .env`.
-- The container will print the question and the API response to stdout.
+Using the included Windows helper (recommended once you're comfortable)
+
+1. Create a desktop shortcut (one-time):
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts\create_shortcut.ps1 -AttemptPinToTaskbar
+   ```
+
+2. Run the shortcut (double-click) — it will build the image and then prompt you to enter queries interactively. Type your query (for example: "Tell me about Salinas, Asturias") and press Enter. Repeat until you press Enter on an empty line.
+
+Notes and troubleshooting
+
+- Always store your key in `.env` (use `.env.example` as a template) and pass it with `--env-file .env` when running the container.
+- If `docker run ... "No prompt provided"` appears, use the `--entrypoint` override shown above or use the `scripts/build_perplexity.ps1` helper which handles argument forwarding.
+- To inspect the Python path inside the image if the path differs on your system:
+  ```powershell
+  docker run --rm perplexity-api ls /opt/conda/envs
+  docker run --rm perplexity-api which python || docker run --rm perplexity-api ls /opt/conda/envs/appenv/bin/python
+  ```
 - Use `--rm` to remove the container after it runs.
 
 ## Project Structure
