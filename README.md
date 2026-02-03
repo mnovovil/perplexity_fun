@@ -111,6 +111,9 @@ perplexity/
 ├── requirements.txt     # Python dependencies
 ├── .env.example        # Environment variables template
 ├── README.md           # This file
+└── scritps/
+    ├── build_perplexity.ps1
+    ├── create_shortcuts.ps1
 └── src/
     ├── query.py        # Main script for querying the API
     ├── queries.py      # Predefined queries
