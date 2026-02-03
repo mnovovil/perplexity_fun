@@ -39,17 +39,34 @@ This project provides a Docker-based setup to interact with the Perplexity API f
    python src/query.py
    ```
 
-### 4. Running with Docker
+### 4. Running with Docker (terminal-only)
+
+This repository is configured to be used entirely from the terminal using Docker. The image includes a small CLI wrapper so you can pass a prompt as an argument or pipe text into the container.
 
 1. Build the Docker image:
    ```bash
    docker build -t perplexity-api .
    ```
 
-2. Run the container:
+2. Run the container with a prompt as an argument:
    ```bash
-   docker run --env-file .env perplexity-api
+   docker run --rm --env-file .env perplexity-api "Tell me about Salinas, Asturias"
    ```
+
+3. Or pipe a prompt into the container (recommended for multi-line prompts):
+   ```bash
+   echo "Tell me about Salinas, Asturias" | docker run --rm --env-file .env -i perplexity-api
+   ```
+
+4. To specify a different preset, set `PERPLEXITY_PRESET` in your `.env` or pass it as an env var:
+   ```bash
+   docker run --rm --env-file .env -e PERPLEXITY_PRESET=pro perplexity-api "Your question here"
+   ```
+
+Notes:
+- Always keep your API key in `.env` and pass it with `--env-file .env`.
+- The container will print the question and the API response to stdout.
+- Use `--rm` to remove the container after it runs.
 
 ## Project Structure
 
