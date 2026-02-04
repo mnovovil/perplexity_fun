@@ -14,7 +14,11 @@ python src/cli.py store-key --key YOUR_API_KEY
 powershell -ExecutionPolicy Bypass -File scripts\build_perplexity.ps1
 ```
 
+![Windows Shortcut](docs/shortcut.png)
+
 3. When prompted, type your question and press Enter. Press Enter on an empty line to finish.
+
+![Terminal Output](docs/terminal.png)
 
 If you prefer a one-shot Docker command instead of the helper:
 
