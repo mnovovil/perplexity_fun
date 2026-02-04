@@ -1,2 +1,4 @@
 perplexityai==0.27.0
 python-dotenv==1.0.0
+# Use a keyring release available on PyPI for broader compatibility
+keyring==23.13.1
