@@ -1,4 +1,4 @@
-# Perplexity API Query System
+# Perplexity API Local Query System Chatbot
 
 This project provides a set up to interact with Perplexity from a local terminal, no need to go into web.
 
@@ -104,20 +104,23 @@ Notes and troubleshooting
 - Use `--rm` to remove the container after it runs.
 
 ## Project Structure
-
 ```
 perplexity/
+├── .env                 # Local environment file (not committed)
+├── .perplexity/         # Local session storage (session.json)
 ├── Dockerfile           # Docker configuration
+├── entrypoint.sh        # Container entrypoint script
 ├── requirements.txt     # Python dependencies
-├── .env.example        # Environment variables template
-├── README.md           # This file
-└── scritps/
-    ├── build_perplexity.ps1
-    ├── create_shortcuts.ps1
-└── src/
-    ├── query.py        # Main script for querying the API
-    ├── queries.py      # Predefined queries
-    └── config.py       # Configuration management
+├── README.md            # This file
+├── scripts/             # Helper scripts (Windows)
+│   ├── build_perplexity.ps1
+│   └── create_shortcut.ps1
+└── src/                 # Source code
+   ├── cli.py           # CLI helpers (store/show key)
+   ├── config.py        # Configuration and keyring helpers
+   ├── queries.py       # Predefined queries
+   ├── query.py         # Main script for querying the API
+   └── session.py       # QueryClient with persistent chat memory
 ```
 
 ## Usage
@@ -186,3 +189,41 @@ Ensure Docker is running and you have sufficient disk space:
 docker system prune  # Free up space
 docker build -t perplexity-api .
 ```
+
+## Session Memory, Secure Key Storage, and Docker Mounting
+
+This project now supports a persistent chat memory and optional secure API key storage:
+
+- Session memory: the client saves a small conversation history (`session.json`) so the chat can "remember" past user messages and assistant replies. The session file is stored by default in the user's data folder (`~/.perplexity/session.json`) inside the container.
+- Secure key storage: you can store your `PERPLEXITY_API_KEY` in the OS keyring using the included CLI helper. The code will prefer `PERPLEXITY_API_KEY` from the environment, then fall back to the OS keyring.
+
+Usage examples:
+
+- Store the API key in the system keyring (recommended):
+```powershell
+python src/cli.py store-key --key YOUR_API_KEY
+```
+
+- Check whether a key is configured:
+```powershell
+python src/cli.py show-key
+```
+
+- Run queries while preserving memory between runs (Windows helper builds and mounts automatically):
+   - Use the `scripts/build_perplexity.ps1` helper that will create a local `.perplexity` folder and mount it into the container so `session.json` is reused between container runs.
+   - Alternatively, mount a host directory yourself when running the container:
+```powershell
+docker run --rm -it -v C:\path\to\repo\.perplexity:/root/.perplexity --env-file .env --entrypoint /opt/conda/envs/appenv/bin/python perplexity-api /app/src/query.py "Where is Williamsburg, NYC?"
+```
+
+Notes on Docker on Windows:
+- If Docker path mounting fails due to Windows path formatting, use the `scripts/build_perplexity.ps1` helper which handles mounting for you, or use a named Docker volume instead:
+```powershell
+docker volume create perplexity_session
+docker run --rm -it -v perplexity_session:/root/.perplexity --env-file .env --entrypoint /opt/conda/envs/appenv/bin/python perplexity-api /app/src/query.py "Hello"
+```
+
+Security and best practices:
+- Do not commit your `.env` with real secrets. Prefer storing the key in the keyring or pass it via environment variables at runtime.
+- If you need to rotate keys, update the keyring entry or the `.env` file and restart the container.
+
