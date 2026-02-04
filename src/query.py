@@ -3,22 +3,26 @@ import os
 import sys
 from dotenv import load_dotenv
 from perplexity import Perplexity
+# Import session safely so the script can be run as a module or a plain script
+try:
+    from .session import QueryClient
+except Exception:
+    from session import QueryClient
 
 # Load environment variables from .env file when running locally
 load_dotenv()
 
 
-def query_perplexity(question: str, preset: str = None) -> str:
-    """Query the Perplexity API with a given question.
+def query_perplexity(question: str, preset: str = None, session_path: str = None) -> str:
+    """Query the Perplexity API with a given question while keeping chat memory.
 
-    Uses the `PERPLEXITY_API_KEY` environment variable for auth.
+    Uses `QueryClient` which persists a small conversation history to `session_path`.
     """
     if preset is None:
         preset = os.getenv("PERPLEXITY_PRESET", "pro-search")
 
-    client = Perplexity()
-    response = client.responses.create(preset=preset, input=question)
-    return getattr(response, "output_text", str(response))
+    client = QueryClient(preset=preset, state_path=session_path)
+    return client.query(question)
 
 
 def main():
@@ -37,7 +41,9 @@ def main():
     print(f"Question: {prompt}\n{'-' * 50}")
 
     try:
-        result = query_perplexity(prompt)
+        # default session file in current working directory
+        session_file = os.getenv("PERPLEXITY_SESSION_PATH")
+        result = query_perplexity(prompt, session_path=session_file)
         print("Response:\n")
         print(result)
     except Exception as e:

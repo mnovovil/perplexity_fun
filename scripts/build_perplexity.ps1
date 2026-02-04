@@ -30,6 +30,12 @@ try {
 if ($rc -eq 0) {
     Write-Host "Build succeeded." -ForegroundColor Green
 
+    # Ensure a local session directory exists for persisting chat memory across container runs
+    $sessionDir = Join-Path $Repo ".perplexity"
+    if (-not (Test-Path $sessionDir)) {
+        New-Item -ItemType Directory -Path $sessionDir | Out-Null
+    }
+
     while ($true) {
         $prompt = Read-Host "Enter prompt to send to Perplexity (leave empty to finish)"
         if ([string]::IsNullOrWhiteSpace($prompt)) {
@@ -40,7 +46,20 @@ if ($rc -eq 0) {
 
         # Run the container using the environment python binary so arguments work reliably
         # Use -it to allocate a TTY so the script prefers argv over empty stdin
-        docker run --rm -it --env-file .env --entrypoint /opt/conda/envs/appenv/bin/python $ImageName /app/src/query.py "$prompt"
+        # Mount the local session directory into the container so history persists between runs
+        $dockerArgs = @(
+            'run',
+            '--rm',
+            '-it',
+            '-v', "${sessionDir}:/root/.perplexity",
+            '--env-file', '.env',
+            '--entrypoint', '/opt/conda/envs/appenv/bin/python',
+            $ImageName,
+            '/app/src/query.py',
+            $prompt
+        )
+
+        & docker @dockerArgs
 
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "docker run exited with code $LASTEXITCODE"
