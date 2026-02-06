@@ -1,4 +1,4 @@
-# Perplexity — Quick PowerShell Install to Run Chatbot Locally
+# Perplexity — Promp perplexity directly from terminal
 
 Quick PowerShell steps to install and run (Windows):
 
@@ -8,17 +8,17 @@ Quick PowerShell steps to install and run (Windows):
 python src/cli.py store-key --key YOUR_API_KEY
 ```
 
-2. Build and run using the included helper (creates and mounts `.perplexity` so session is preserved):
+2. Run the setup script to install globally (one-time setup):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build_perplexity.ps1
+powershell -ExecutionPolicy Bypass -File scripts\setup_perplexity_global.ps1
 ```
 
-![Windows Shortcut](docs/shortcut.png)
+3. Once installed, simply run `px` from any terminal to start Perplexity:
 
-3. When prompted, type your question and press Enter. Press Enter on an empty line to finish.
-
-![Terminal Output](docs/terminal.png)
+```powershell
+px "insert your prompt"
+```
 
 If you prefer a one-shot Docker command instead of the helper:
 
