@@ -18,7 +18,7 @@ load_dotenv()
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "")
 
 # Default settings
-DEFAULT_PRESET = "pro-search"
+DEFAULT_PRESET = "sonar"
 DEFAULT_TIMEOUT = 30
 
 # API Endpoints

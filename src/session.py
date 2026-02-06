@@ -31,7 +31,7 @@ class QueryClient:
         max_history_items: int = 20,
     ) -> None:
         self.client = Perplexity()
-        self.preset = preset or os.getenv("PERPLEXITY_PRESET", "pro-search")
+        self.preset = preset or os.getenv("PERPLEXITY_PRESET", "sonar")
         # Default session file in user data directory for persistence across restarts
         default_dir = os.path.join(os.path.expanduser("~"), ".perplexity")
         try:
