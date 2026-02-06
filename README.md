@@ -1,4 +1,4 @@
-# Perplexity — Promp perplexity directly from terminal
+# Perplexity from terminal
 
 Quick PowerShell steps to install and run (Windows):
 
