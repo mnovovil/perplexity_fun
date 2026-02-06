@@ -20,12 +20,5 @@ powershell -ExecutionPolicy Bypass -File scripts\setup_perplexity_global.ps1
 px "insert your prompt"
 ```
 
-If you prefer a one-shot Docker command instead of the helper:
-
-```powershell
-docker build -t perplexity-api .
-docker run --rm --env-file .env --entrypoint /opt/conda/envs/appenv/bin/python perplexity-api /app/src/query.py "Where is Williamsburg, NYC?"
-```
-
 That's all — the session file is stored at `.perplexity/session.json` in the repo when you use the helper.
 
