@@ -14,6 +14,7 @@ AVAILABLE_PRESETS = [
     "pro",
     "stable-diffusion",
     "fast",
+    "sonar"
 ]
 
 def get_query(query_key: str) -> str:

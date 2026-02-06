@@ -19,7 +19,7 @@ def query_perplexity(question: str, preset: str = None, session_path: str = None
     Uses `QueryClient` which persists a small conversation history to `session_path`.
     """
     if preset is None:
-        preset = os.getenv("PERPLEXITY_PRESET", "pro-search")
+        preset = os.getenv("PERPLEXITY_PRESET", "sonar")
 
     client = QueryClient(preset=preset, state_path=session_path)
     return client.query(question)

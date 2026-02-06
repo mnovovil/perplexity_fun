@@ -39,3 +39,7 @@ pytest tests/ -v --cov=src --cov-report=html
 
 Tests are automatically run on every push and pull request via GitHub Actions. See [.github/workflows/pytest.yml](.github/workflows/pytest.yml) for the workflow configuration.
 
+## AI Model
+
+This project uses the [Perplexity Sonar](https://www.perplexity.ai/sonar) model.
+
