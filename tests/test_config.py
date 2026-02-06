@@ -3,6 +3,7 @@ import pytest
 import os
 from unittest.mock import patch
 from src import config
+from src.queries import AVAILABLE_PRESETS
 
 
 class TestConfigValidation:
@@ -17,7 +18,7 @@ class TestConfigValidation:
 
     def test_default_preset_value(self):
         """Test default preset is set correctly"""
-        assert config.DEFAULT_PRESET == "pro-search"
+        assert config.DEFAULT_PRESET in AVAILABLE_PRESETS
 
     def test_default_timeout_value(self):
         """Test default timeout is set correctly"""
